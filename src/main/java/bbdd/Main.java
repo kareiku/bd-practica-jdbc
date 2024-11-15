@@ -5,17 +5,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Main {
-    private final static String DB_SERVER = null;
+    private final static String DB_SERVER = null; // TODO Add IP
     private final static int DB_PORT = 3306;
-    private final static String DB_NAME = null;
-    private final static String DB_USER = null;
-    private final static String DB_PASS = null;
+    private final static String DB_NAME = "Base de datos del Titanic"; // TODO Name TBD
+    private final static String DB_USER = "root";
+    private final static String DB_PASS = "root";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception { // fixme Ask: if main throws an exception, who captures it?
         Class.forName("com.mysql.cj.jdbc.Driver");
 
-        String url = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
-        Connection connection = DriverManager.getConnection(url, DB_USER, DB_PASS);
+        final String URL = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
+        final Connection connection = DriverManager.getConnection(URL, DB_USER, DB_PASS);
 
         // TODO Prueba sus funciones
         //  1. Añade los planetas a la base de datos
