@@ -1,13 +1,13 @@
 # Práctica Bases de Datos
 ## JDBC
 > Grupo: *CITIM21_19*
-<br>
+> <br>
 > Curso: 2024/25
 ## Desarrolladores (alumnos integrantes del grupo de prácticas)
 > Alberto Navarro Muñoz
-<br>
+> <br>
 > Diego Valentín Rodríguez Marín
-<br>
+> <br>
 > Andrés Segade Vedenova
-<br>
+> <br>
 > Marcos Sánchez Cuello.
