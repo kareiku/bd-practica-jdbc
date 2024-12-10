@@ -1,39 +1,161 @@
 package bbdd;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Main {
-    private final static String DB_SERVER = null; // TODO Add IP
+    private final static String DB_SERVER = "localhost";
     private final static int DB_PORT = 3306;
-    private final static String DB_NAME = "Base de datos del Titanic"; // TODO Name TBD
-    private final static String DB_USER = "root";
-    private final static String DB_PASS = "root";
+    private final static String DB_NAME = "TitanicDB";
+    private final static String DB_USER = "admin";
+    private final static String DB_PASS = "patata";
 
-    public static void main(String[] args) throws Exception { // fixme Ask: if main throws an exception, who captures it?
-        Class.forName("com.mysql.cj.jdbc.Driver");
+    public static final String URL = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
+    public static Connection connection = null;
 
-        final String URL = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
-        final Connection connection = DriverManager.getConnection(URL, DB_USER, DB_PASS);
+    public static void main(String[] args) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+        } catch (Exception ex) {
+            assert false;
+        }
+        try {
+            connection = DriverManager.getConnection(URL, DB_USER, DB_PASS);
 
-        // TODO Prueba sus funciones
-        //  1. Añade los planetas a la base de datos
-        //  2. Muestra por pantalla la lista de pasajeros de la cabina A-60-S
-        //  3. Muestra por pantalla una lista de sistemas, planetas y número de pasajeros con origen en ellos
+            /* ========================= Ej 1 =========================== */
+            nuevoPlaneta("Kepler-186f", 3.3 * Math.pow(10, 24), 8800, "Copernico");
+            nuevoPlaneta("HD 209458 b (Osiris)", 1.4 * Math.pow(10, 27), 100000, "Beta Pictoris");
+            nuevoPlaneta("LHS 1140 b", 8.3 * Math.pow(10, 24), 8800, "Copernico");
 
-        connection.close();
+            /* ========================= Ej 2 =========================== */
+            listaPasajerosCabina("A", 60, "S");
+
+            /* ========================= Ej 3 =========================== */
+            listaOrigenes();
+
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            assert false;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                assert false;
+            }
+        }
     }
 
     private static void nuevoPlaneta(String nombre, double masa, int radio, String sistema) throws SQLException {
-        // TODO Añade planetas a la base de datos
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            if (statement.execute("SELECT * FROM titanic_spaceship.planetas")) {
+                resultSet = statement.getResultSet();
+                resultSet.moveToInsertRow();
+                resultSet.updateString(1, nombre);
+                resultSet.updateDouble(2, masa);
+                resultSet.updateInt(3, radio);
+                resultSet.updateString(4, sistema);
+                resultSet.insertRow();
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            assert false;
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException ex) {
+                    assert false;
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    assert false;
+                }
+            }
+        }
     }
 
     private static void listaPasajerosCabina(String cubierta, int cabina, String lado) throws SQLException {
-        // TODO Muestra por pantalla una lista de pasajeros de una cabina
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.createStatement();
+            if (statement.execute("SELECT nombre, edad FROM titanic_spaceship.pasajeros WHERE cubierta = '" + cubierta +
+                    "' AND numero_cabina = " + cabina + " AND lado_cabina = '" + lado + "'")) {
+                resultSet = statement.getResultSet();
+                resultSet.beforeFirst();
+                while (resultSet.next()) {
+                    System.out.println("Nombre: " + resultSet.getString(1) + " Edad: " + resultSet.getString(2));
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            assert false;
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException ex) {
+                    assert false;
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    assert false;
+                }
+            }
+        }
     }
 
     private static void listaOrigenes() throws SQLException {
-        // TODO Muestra por pantalla una lista de planetas, sistemas y número de pasajeros provinientes de ellos
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.createStatement();
+            if (statement.execute("SELECT planeta_natal, sistema_natal, COUNT(*) FROM titanic_spaceship.pasajeros " +
+                    "GROUP BY planeta_natal, sistema_natal")) {
+                resultSet = statement.getResultSet();
+                resultSet.beforeFirst();
+                while (resultSet.next()) {
+                    System.out.println("Planeta: " + resultSet.getString(1) + " Sistema: " + resultSet.getString(2) +
+                            " Total: " + resultSet.getInt(3));
+                }
+            }
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+            assert false;
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException ex) {
+                    assert false;
+                }
+            }
+            if (statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    assert false;
+                }
+            }
+        }
     }
 }
