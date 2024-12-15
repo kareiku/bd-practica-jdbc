@@ -3,11 +3,11 @@ package bbdd;
 import java.sql.*;
 
 public class Main {
-    private final static String DB_SERVER = "localhost";
+    private final static String DB_SERVER = "127.0.0.1";
     private final static int DB_PORT = 3306;
-    private final static String DB_NAME = "TitanicDB";
-    private final static String DB_USER = "admin";
-    private final static String DB_PASS = "patata";
+    private final static String DB_NAME = "titanic_spaceship";
+    private final static String DB_USER = "root";
+    private final static String DB_PASS = "";
 
     public static final String URL = "jdbc:mysql://" + DB_SERVER + ":" + DB_PORT + "/" + DB_NAME;
     public static Connection connection = null;
@@ -127,12 +127,13 @@ public class Main {
         ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
-            if (statement.execute("SELECT planeta_natal, sistema_natal, COUNT(*) FROM titanic_spaceship.pasajeros " +
-                    "GROUP BY planeta_natal, sistema_natal")) {
+            if (statement.execute("SELECT sistema, pl.nombre, COUNT(DISTINCT id) FROM pasajeros pa " +
+                    "RIGHT JOIN planetas pl ON pa.planeta_natal = pl.nombre AND pa.sistema_natal = pl.sistema " +
+                    "GROUP BY pl.nombre, sistema ORDER BY sistema")) {
                 resultSet = statement.getResultSet();
                 resultSet.beforeFirst();
                 while (resultSet.next()) {
-                    System.out.println("Planeta: " + resultSet.getString(1) + " Sistema: " + resultSet.getString(2) +
+                    System.out.println("Sistema: " + resultSet.getString(1) +" Planeta: " + resultSet.getString(2) +
                             " Total: " + resultSet.getInt(3));
                 }
             }
