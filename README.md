@@ -10,4 +10,4 @@ Diego Valentín Rodríguez Marín
 <br>
 Andrés Segade Vedenova
 <br>
-Marcos Sánchez Cuello.
+Marcos Sánchez Cuello
