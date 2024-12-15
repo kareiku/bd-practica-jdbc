@@ -3,7 +3,7 @@ package bbdd;
 import java.sql.*;
 
 public class Main {
-    private final static String DB_SERVER = "127.0.0.1";
+    private final static String DB_SERVER = "localhost";
     private final static int DB_PORT = 3306;
     private final static String DB_NAME = "titanic_spaceship";
     private final static String DB_USER = "root";
